@@ -14,17 +14,19 @@ Upload an outfit image. The app encodes it with **ResNet50**, retrieves the near
 
 The Gradio app lets you pick a sample look or upload your own photo, then returns a style writeup plus shoppable item details.
 
-**1. Example gallery** — choose one of the built-in outfit photos.
+> **Sample images are Taylor Swift outfits**, scraped from the first 10 pages of [taylorswiftstyle.com](https://taylorswiftstyle.com) with BeautifulSoup. They are **not** stock photos of a hired fashion model. The person in the demo screenshots and `examples/` files is Taylor Swift wearing documented looks from that site.
 
-![Example gallery with three fashion looks](docs/screenshots/01-example-gallery.png)
+**1. Example gallery** — choose one of the built-in Taylor Swift outfit photos.
+
+![Example gallery of Taylor Swift outfits from taylorswiftstyle.com](docs/screenshots/01-example-gallery.png)
 
 **2. Upload** — drop a fashion image or click to browse.
 
 ![Empty upload panel and Analyze Style button](docs/screenshots/02-upload.png)
 
-**3. Example loaded** — a selected look is ready for analysis.
+**3. Example loaded** — a selected Taylor Swift look is ready for analysis.
 
-![Example 1 loaded in the upload panel](docs/screenshots/03-example-loaded.png)
+![Taylor Swift outfit example loaded in the upload panel](docs/screenshots/03-example-loaded.png)
 
 **4. Analysis results** — multimodal RAG returns a grounded writeup and catalog SKUs.
 
@@ -154,7 +156,7 @@ Multimodal-Style-Finder/
 │   │   └── llm_service.py      # Llama 4 Vision client
 │   └── utils/helpers.py
 ├── data/                       # pickle + chroma index (gitignored)
-├── examples/                   # sample outfit photos
+├── examples/                   # Taylor Swift outfits from taylorswiftstyle.com
 ├── docs/screenshots/           # README demo captures
 ├── scripts/
 │   ├── download_dataset.sh
@@ -177,11 +179,13 @@ Multimodal-Style-Finder/
 
 ## Dataset and Chroma index
 
-The demo catalog is curated from [taylorswiftstyle.com](https://taylorswiftstyle.com). Each row is one fashion item: **name**, **price**, **purchase link**, and the **full-outfit image** it appears in. Embeddings are ingested once into Chroma so request-time retrieval is a vector query, not a full pandas scan.
+The demo catalog and sample images are **Taylor Swift outfits** from [taylorswiftstyle.com](https://taylorswiftstyle.com), not photos of a generic lady model. The first **10 pages** of the site were scraped with **BeautifulSoup**, collecting outfit photos of Taylor Swift plus each item's name, price, and purchase link.
+
+Each catalog row is one fashion item: **name**, **price**, **purchase link**, and the **full-outfit image** (Taylor Swift wearing that look). Embeddings are ingested once into Chroma so request-time retrieval is a vector query, not a full pandas scan.
 
 ```mermaid
 flowchart LR
-    Scrape["Scrape first 10 pages<br/>item, price, image URL"] --> Frame["pandas DataFrame"]
+    Scrape["Scrape first 10 pages of<br/>taylorswiftstyle.com<br/>BeautifulSoup"] --> Frame["pandas DataFrame"]
     Frame --> Encode["ResNet50 vector"]
     Encode --> Pickle["swift-style-embeddings.pkl"]
     Pickle --> Ingest["scripts/ingest_chromadb.py"]
